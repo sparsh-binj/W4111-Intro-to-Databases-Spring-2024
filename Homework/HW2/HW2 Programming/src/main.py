@@ -63,7 +63,8 @@ async def get_students(req: Request):
 	"""
 
 	# Use `dict(req.query_params)` to access query parameters
-	pass
+	query_params = dict(req.query_params)
+
 
 @app.get("/students/{student_id}")
 async def get_student(student_id: int):

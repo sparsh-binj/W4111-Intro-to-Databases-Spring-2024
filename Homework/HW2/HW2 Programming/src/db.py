@@ -55,7 +55,12 @@ class DB:
 		:param filters: Key-value pairs that the rows from table must satisfy
 		:returns: A query string and any placeholder arguments
 		"""
-		pass
+
+		attrib_clause = "*" if rows == [] else ", ".join(map(str, rows))
+		where_clause = "" if not filters else " WHERE " + " AND ".join([f"{keyword} = %s" for keyword in filters.keys()])
+		args = list(filters.values())
+		return "SELECT " + attrib_clause + f" FROM {table}" + where_clause, args
+
 
 	def select(self, table: str, rows: List[str], filters: KV) -> List[KV]:
 		"""Runs a select statement. You should use build_select_query and execute_query.
@@ -65,7 +70,10 @@ class DB:
 		:param filters: Key-value pairs that the rows to be selected must satisfy
 		:returns: The selected rows
 		"""
-		pass
+		query, args = self.build_select_query(table, rows, filters)
+		result = self.execute_query(query, args, True)
+		return result
+
 
 	@staticmethod
 	def build_insert_query(table: str, values: KV) -> Query:
@@ -75,7 +83,11 @@ class DB:
 		:param values: Key-value pairs that represent the values to be inserted
 		:returns: A query string and any placeholder arguments
 		"""
-		pass
+		attrib_clause = " (" + ", ".join(map(str, values.keys())) + ")"
+		args = list(values.values())
+		placeholder = ["%s"]*len(args)
+		values_clause = " VALUES (" + ", ".join(map(str, placeholder)) + ")"
+		return f"INSERT INTO {table}" + attrib_clause + values_clause, args
 
 	def insert(self, table: str, values: KV) -> int:
 		"""Runs an insert statement. You should use build_insert_query and execute_query.
@@ -84,7 +96,9 @@ class DB:
 		:param values: Key-value pairs that represent the values to be inserted
 		:returns: The number of rows affected
 		"""
-		pass
+		query, args = self.build_insert_query(table, values)
+		result = self.execute_query(query, args, False)
+		return result
 
 	@staticmethod
 	def build_update_query(table: str, values: KV, filters: KV) -> Query:
@@ -95,7 +109,10 @@ class DB:
 		:param filters: Key-value pairs that the rows from table must satisfy
 		:returns: A query string and any placeholder arguments
 		"""
-		pass
+		set_clause = "SET " + ", ".join([f"{keyword} = %s" for keyword in values.keys()])
+		where_clause = "" if not filters else " WHERE " + " AND ".join([f"{keyword} = %s" for keyword in filters.keys()])
+		args = list(values.values()) + list(filters.values())
+		return f"UPDATE {table} " + set_clause + where_clause, args
 
 	def update(self, table: str, values: KV, filters: KV) -> int:
 		"""Runs an update statement. You should use build_update_query and execute_query.
@@ -105,7 +122,9 @@ class DB:
 		:param filters: Key-value pairs that the rows to be updated must satisfy
 		:returns: The number of rows affected
 		"""
-		pass
+		query, args = self.build_update_query(table, values, filters)
+		result = self.execute_query(query, args, False)
+		return result
 
 	@staticmethod
 	def build_delete_query(table: str, filters: KV) -> Query:
@@ -115,7 +134,9 @@ class DB:
 		:param filters: Key-value pairs that the rows to be deleted must satisfy
 		:returns: A query string and any placeholder arguments
 		"""
-		pass
+		where_clause = "" if not filters else " WHERE " + " AND ".join([f"{keyword} = %s" for keyword in filters.keys()])
+		args = list(filters.values())
+		return f"DELETE FROM {table}" + where_clause, args
 
 	def delete(self, table: str, filters: KV) -> int:
 		"""Runs a delete statement. You should use build_delete_query and execute_query.
