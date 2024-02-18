@@ -56,7 +56,7 @@ class DB:
 		:returns: A query string and any placeholder arguments
 		"""
 
-		attrib_clause = "*" if rows == [] else ", ".join(map(str, rows))
+		attrib_clause = "*" if not rows else ", ".join(map(str, rows))
 		where_clause = "" if not filters else " WHERE " + " AND ".join([f"{keyword} = %s" for keyword in filters.keys()])
 		args = list(filters.values())
 		return "SELECT " + attrib_clause + f" FROM {table}" + where_clause, args
@@ -145,4 +145,6 @@ class DB:
 		:param filters: Key-value pairs that the rows to be deleted must satisfy
 		:returns: The number of rows affected
 		"""
-		pass
+		query, args = self.build_delete_query(table, filters)
+		result = self.execute_query(query, args, False)
+		return result
