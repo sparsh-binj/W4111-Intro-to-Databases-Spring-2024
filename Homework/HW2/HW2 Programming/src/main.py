@@ -58,7 +58,7 @@ async def get_students(req: Request):
 	For instance,
 		GET http://0.0.0.0:8002/students
 	should return all attributes for all students.
->>>>>>> f7a0658b7fd2d6d7f723c9ad6c558d74e6e72137
+
 
     For instance,
         GET http://0.0.0.0:8002/students?first_name=John&last_name=Doe
@@ -84,23 +84,9 @@ async def get_students(req: Request):
     if rows:
         rows = rows.split(',')
         del filters['fields']
-    result = db.select(table="student", rows=rows, filters=filters)
+    result = db.select(table="student", columns=rows, filters=filters)
     return JSONResponse(content=result, status_code=200)
 
-<<<<<<< HEAD
-=======
-	# Use `dict(req.query_params)` to access query parameters
-
-	try:
-		# raise NotImplemented()
-		result = [
-			{"cat": True},
-			{"canary": "Bird"}
-		]
-	except Exception as e:
-		response = JSONResponse(content=result, status_code=200)
-
->>>>>>> f7a0658b7fd2d6d7f723c9ad6c558d74e6e72137
 
 @app.get("/students/{student_id}")
 async def get_student(student_id: int):
@@ -262,7 +248,7 @@ async def get_employees(req: Request):
     if rows:
         rows = rows.split(',')
         del filters['fields']
-    result = db.select(table="employee", rows=rows, filters=filters)
+    result = db.select(table="employee", columns=rows, filters=filters)
     return JSONResponse(content=result, status_code=200)
 
 
